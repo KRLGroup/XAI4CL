@@ -4,7 +4,7 @@
 
 This is the official code repository of *XAI-Guided Continual Learning: Rationale, Methods, and Future Directions*. It re-implements existing XAI-guided continual learning methods, testing them on different datasets and scenarios to provide ready-to-use baselines.
 
-## XAI-Guided Continual Learning: Rationale, Methods, and Future
+## XAI-Guided Continual Learning: Rationale, Methods, and Future Directions
 ### Abstract
 Providing neural networks with the ability to learn new tasks sequentially represents one of the main challenges in artificial intelligence. Indeed, neural networks are prone to losing previously acquired knowledge upon learning new information, a phenomenon known as catastrophic forgetting. Continual learning proposes diverse solutions to mitigate this problem, but only a few leverage explainable artificial intelligence. This work justifies using explainability techniques in continual learning, emphasizing the need for greater transparency and trustworthiness in these systems and identifying a neuroscientific rationale in the similarities between the forgetting mechanisms in biological and artificial neural networks. Finally, we review existing research applying explainability methods to address catastrophic forgetting, organizing them into a comprehensive taxonomy and proposing potential avenues for future research on this topic.
 
