@@ -24,3 +24,19 @@ The following table summarizes existing XAI-guided continual learning approaches
 | Shape and Semantics-based Selective Regularization | S3R          | [Zhang, J. et al. (2023)](https://ieeexplore.ieee.org/document/10078916)           | IEEE Medical Imaging | [Link](https://github.com/jingyzhang/S3R)                                                     |
 | Saliency-Augmented Memory Completion               | SAMC         | [Bai, G. et al. (2023)](https://epubs.siam.org/doi/pdf/10.1137/1.9781611977653.ch28)          | SDM                  | [Link](https://github.com/BaiTheBest/SAMC)                                                    |
 | Concept Controller                                 | CC           | [Yang, S. et al. (2024)](https://openreview.net/forum?id=pGL4P2kg6V&noteId=vPp16Pn9BE)            | ICLR Reject          | -                                                                                     |
+
+## Environment set-up
+We provide a ready-to-use environment to perform experiments, following these steps:
+* Download and install docker following the steps at [this link](https://docs.docker.com/engine/install/).
+* Pull the PyTorch docker image optimized by NVIDIA
+  ```docker pull nvcr.io/nvidia/pytorch:23.12-py3```
+* Clone this repo
+  ```git clone https://github.com/KRLGroup/XAI4CL.git```
+* Move inside the Dockerfile directory
+  ```cd Dockerfile/```
+* Build the custom image
+  ```docker build -t xai4cl:1.0 .```
+* Move to the parent directory
+  ```cd ..```
+* Run the docker container
+  ```docker run --gpus all -it --rm -v XAI4CL:/workspace/ --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --env="DISPLAY" --net=host --ulimit memlock=-1 --ulimit stack=67108864 --ipc=host xai4cl:1.0```
