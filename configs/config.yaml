@@ -1,0 +1,20 @@
+experiment:
+    benchmark: 'mnist-split'
+    n_tasks: 5
+    model: 'mlp'
+    strategy: 'baseline'
+    n_classes: 10
+    seed: 42
+
+train:
+    optimizer: 'adam'
+    loss: 'cross_entropy'
+    lr: 0.0001
+    momentum: 0.9
+
+    batch_size: 128
+    epochs: 5
+    
+setup:
+    checkpoint_dir: '../checkpoints'
+    checkpoint_every: 1 # Create a checkpoint every n epochs: -1 means you checkpoint just at the end of each task

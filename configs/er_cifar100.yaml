@@ -1,0 +1,30 @@
+experiment:
+    benchmark: 'cifar100-split'
+    n_tasks: 10
+    model: 'resnet34'
+    n_classes: 100
+    strategy: 'er'
+    seed: 42
+
+strategy:
+    mem_size: 2000
+    batch_size_mem: 128
+
+
+train:
+    optimizer: 'sgd'
+    loss: 'cross_entropy'
+    lr: 0.1
+    momentum: 0.9
+    weight_decay: 0.0002
+
+    batch_size: 128
+    epochs: 100
+    
+    mem_size: 1000
+    batch_size_mem: 32
+    patch_size: 28
+    stride: 2 
+setup:
+    checkpoint_dir: '../checkpoints'
+    checkpoint_every: 1 # Create a checkpoint every n epochs: -1 means you checkpoint just at the end of each task
