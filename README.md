@@ -4,7 +4,7 @@
 
 This is the official code repository of *XAI-Guided Continual Learning: Rationale, Methods, and Future Directions*. It re-implements existing XAI-guided continual learning methods, testing them on different datasets and scenarios to provide ready-to-use baselines.
 
-## XAI-Guided Continual Learning: Rationale, Methods, and Future
+## XAI-Guided Continual Learning: Rationale, Methods, and Future Directions
 ### Abstract
 Providing neural networks with the ability to learn new tasks sequentially represents one of the main challenges in artificial intelligence. Indeed, neural networks are prone to losing previously acquired knowledge upon learning new information, a phenomenon known as catastrophic forgetting. Continual learning proposes diverse solutions to mitigate this problem, but only a few leverage explainable artificial intelligence. This work justifies using explainability techniques in continual learning, emphasizing the need for greater transparency and trustworthiness in these systems and identifying a neuroscientific rationale in the similarities between the forgetting mechanisms in biological and artificial neural networks. Finally, we review existing research applying explainability methods to address catastrophic forgetting, organizing them into a comprehensive taxonomy and proposing potential avenues for future research on this topic.
 
@@ -24,3 +24,19 @@ The following table summarizes existing XAI-guided continual learning approaches
 | Shape and Semantics-based Selective Regularization | S3R          | [Zhang, J. et al. (2023)](https://ieeexplore.ieee.org/document/10078916)           | IEEE Medical Imaging | [Link](https://github.com/jingyzhang/S3R)                                                     |
 | Saliency-Augmented Memory Completion               | SAMC         | [Bai, G. et al. (2023)](https://epubs.siam.org/doi/pdf/10.1137/1.9781611977653.ch28)          | SDM                  | [Link](https://github.com/BaiTheBest/SAMC)                                                    |
 | Concept Controller                                 | CC           | [Yang, S. et al. (2024)](https://openreview.net/forum?id=pGL4P2kg6V&noteId=vPp16Pn9BE)            | ICLR Reject          | -                                                                                     |
+
+## Environment set-up
+We provide a ready-to-use environment to perform experiments, following these steps:
+* Download and install docker following the steps at [this link](https://docs.docker.com/engine/install/).
+* Pull the PyTorch docker image optimized by NVIDIA
+  ```docker pull nvcr.io/nvidia/pytorch:23.12-py3```
+* Clone this repo
+  ```git clone https://github.com/KRLGroup/XAI4CL.git```
+* Move inside the Dockerfile directory
+  ```cd Dockerfile/```
+* Build the custom image
+  ```docker build -t xai4cl:1.0 .```
+* Move to the parent directory
+  ```cd ..```
+* Run the docker container
+  ```docker run --gpus all -it --rm -v XAI4CL:/workspace/ --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --env="DISPLAY" --net=host --ulimit memlock=-1 --ulimit stack=67108864 --ipc=host xai4cl:1.0```
