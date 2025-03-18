@@ -39,4 +39,4 @@ We provide a ready-to-use environment to perform experiments, following these st
 * Move to the parent directory
   ```cd ..```
 * Run the docker container
-  ```docker run --gpus all -it --rm -v XAI4CL:/workspace/ --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --env="DISPLAY" --net=host --ulimit memlock=-1 --ulimit stack=67108864 --ipc=host xai4cl:1.0```
+  ```docker run --gpus all -it --rm -v XAI4CL:/workspace/ xai4cl:1.0```
