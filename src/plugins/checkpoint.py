@@ -3,6 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from avalanche.training.plugins import SupervisedPlugin
+import json
 
 
 class MetricsCheckpoint(SupervisedPlugin):
@@ -57,6 +58,17 @@ class MetricsCheckpoint(SupervisedPlugin):
         self._update_exp_metrics(strategy)
         if self.verbose:
             print(f'End of experience {strategy.clock.train_exp_counter}')
+        if strategy.clock.train_exp_counter == self.n_tasks - 1:
+            # Save self.metrics_history
+            metrics_history_file = os.path.join(self.checkpoint_dir, 'metrics_history.json')
+            with open(metrics_history_file, 'w') as f:
+                json.dump(self.metrics_history, f)
+            # Save self.exp_metrics
+            exp_metrics_file = os.path.join(self.checkpoint_dir, 'exp_metrics.json')
+            with open(exp_metrics_file, 'w') as f:
+                json.dump(self.exp_metrics, f)
+            if self.verbose:
+                print(f'Metrics history saved!')
 
 
     def _update_exp_metrics(self, strategy):

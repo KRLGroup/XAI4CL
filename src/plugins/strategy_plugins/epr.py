@@ -15,7 +15,7 @@ from avalanche.benchmarks.utils.data_loader import ReplayDataLoader
 from avalanche.training.plugins.strategy_plugin import SupervisedPlugin
 from avalanche.training.templates import SupervisedTemplate
 from avalanche.benchmarks import CLExperience
-from storage_policy import EPRExperienceBalancedBuffer
+from storage_policy import ExpandedExperienceBalancedBuffer
 
 TExperienceType = TypeVar("TExperienceType", bound=CLExperience)
 
@@ -60,6 +60,7 @@ class EPRPlugin(SupervisedPlugin, supports_distributed=True):
         batch_size: Optional[int] = None,
         batch_size_mem: Optional[int] = None,
         task_balanced_dataloader: bool = False,
+        epr_selection: bool = True,
     ):
         super().__init__()
 
@@ -76,8 +77,15 @@ class EPRPlugin(SupervisedPlugin, supports_distributed=True):
         self.batch_size = batch_size
         self.batch_size_mem = batch_size_mem
         self.task_balanced_dataloader = task_balanced_dataloader
+        self.epr_selection = epr_selection
 
-        self.storage_policy = EPRExperienceBalancedBuffer(max_size=self.mem_size, adaptive_size=self.mem_adaptive_size, num_experiences=self.num_experiences)
+        self.storage_policy = ExpandedExperienceBalancedBuffer(
+                                    max_size=self.mem_size,
+                                    adaptive_size=self.mem_adaptive_size,
+                                    num_experiences=self.num_experiences,
+                                    epr_selection=self.epr_selection,
+                                    type='epr'
+                                )
 
     def create_patch_dataset(self, patches, top_left_coords, full_sized_dataset):
         padded_patches, ys, ts = [], [], []
@@ -88,11 +96,11 @@ class EPRPlugin(SupervisedPlugin, supports_distributed=True):
             padded_patch = torch.zeros((c, img_size, img_size), dtype=patch.dtype)
             padded_patch[:, top_left_coord[0]:top_left_coord[0]+patch.shape[1], top_left_coord[1]:top_left_coord[1]+patch.shape[2]] = patch
             
-            padded_patches.append(torch.unsqueeze(padded_patch, dim=0))
+            padded_patches.append(padded_patch)
             ys.append(y)
             ts.append(t)
 
-        padded_patches = torch.cat(padded_patches, dim=0)
+        padded_patches = torch.stack(padded_patches, dim=0)
         ys = torch.tensor(ys)
         ts = torch.tensor(ts)
 

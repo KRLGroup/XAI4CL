@@ -13,7 +13,10 @@ from avalanche.training.plugins.strategy_plugin import SupervisedPlugin
 from avalanche.training.templates import SupervisedTemplate
 from avalanche.benchmarks import CLExperience
 from gradcam import GradCAM
-from storage_policy import RRRExperienceBalancedBuffer
+from storage_policy import ExpandedExperienceBalancedBuffer
+from PIL import Image
+import numpy as np
+import matplotlib.cm as cm
 
 TExperienceType = TypeVar("TExperienceType", bound=CLExperience)
 
@@ -72,6 +75,9 @@ class RRRPlugin(SupervisedPlugin, supports_distributed=True):
                 "You can either use an adaptive memory (mem_size is divided equally over all observed experiences), \
                 or divide mem_size by the fixed number of experiences"
 
+        if mem_adaptive_size:
+            num_experiences = None
+
         self.xai_loss = xai_loss
         self.xai_optimizer = xai_optimizer
         self.xai_regularizer = xai_regularizer
@@ -82,7 +88,12 @@ class RRRPlugin(SupervisedPlugin, supports_distributed=True):
         self.batch_size_mem = batch_size_mem
         self.task_balanced_dataloader = task_balanced_dataloader
 
-        self.storage_policy = RRRExperienceBalancedBuffer(self.mem_size, adaptive_size=self.mem_adaptive_size, num_experiences=self.num_experiences)
+        self.storage_policy = ExpandedExperienceBalancedBuffer(
+                                    self.mem_size,
+                                    adaptive_size=self.mem_adaptive_size,
+                                    num_experiences=self.num_experiences,
+                                    type='rrr'
+                              )
 
     def before_training_exp(
         self,

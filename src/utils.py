@@ -29,10 +29,20 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='XAI4CL: benchmarks for XAI-guided continual learning.')
 
     parser.add_argument('--config',  type=str, default='../configs/config.yaml')
+    parser.add_argument('--seed', type=int, default=42, help='Random seed for reproducibility')
+    parser.add_argument('--num-seeds', type=int, default=3, help='Number of random seeds to use for the experiment')
     parser.add_argument('overrides', nargs='*', help="Any key = value arguments to override config values")
 
     flags =  parser.parse_args()
-    args = OmegaConf.load(flags.config)
+    config = OmegaConf.load(flags.config)
+    cli_conf = OmegaConf.create({
+        "seed": flags.seed,
+        "num_seeds": flags.num_seeds
+    })
+    args = OmegaConf.merge(config, cli_conf)
+    for override in flags.overrides:
+        key, value = override.split('=')
+        OmegaConf.update(args, key, value)
     return args
 
 def set_all_seeds(seed):
@@ -48,6 +58,13 @@ def set_all_seeds(seed):
     random.seed(seed)
     # Set seed for NumPy operations
     np.random.seed(seed)
+
+def generate_random_seeds(num_seeds):
+    seeds = []
+    for i in range(num_seeds):
+        seed = random.randint(0, 10000)
+        seeds.append(seed)
+    return seeds
 
 def get_model(name, num_classes, benchmark):
     if name == 'mlp':
@@ -88,6 +105,11 @@ def get_benchmark(name, n_tasks, seed, train_transform=None, eval_transform=None
             benchmark = SplitCUB200(n_experiences=n_tasks, shuffle=False, seed=seed)
         else:
             benchmark = SplitCUB200(n_experiences=n_tasks, shuffle=False, seed=seed, train_transform=train_transform, eval_transform=eval_transform)
+    elif name == 'tinyimagenet-split':
+        if train_transform is None and eval_transform is None:
+            benchmark = SplitTinyImageNet(n_experiences=n_tasks, shuffle=False, seed=seed)
+        else:
+            benchmark = SplitTinyImageNet(n_experiences=n_tasks, shuffle=False, seed=seed, train_transform=train_transform, eval_transform=eval_transform)
     else:
         print('The benchmark is not included yet: choose one from this list [split-mnist, cifar10-split, cifar100-split]')
 
@@ -133,15 +155,6 @@ def get_loss(args):
 def get_strategy(args, model, checkpoint_dir, device):
     optimizer, xai_optimizer = get_optimizer(args, model)
     loss, xai_loss = get_loss(args)
-    
-    '''
-    eval_plugin = EvaluationPlugin(
-        accuracy_metrics(epoch=True, experience=True),
-        loss_metrics(epoch=True, experience=True),
-        bwt_metrics(experience=True),
-        forward_transfer_metrics(experience=True)
-    )
-    '''
 
     interactive_logger = InteractiveLogger()
     eval_plugin = EvaluationPlugin(
@@ -163,11 +176,7 @@ def get_strategy(args, model, checkpoint_dir, device):
     elif args.experiment.strategy == 'mas':
         strategy_plugins.append(MASPlugin(lambda_reg=args.strategy.lambda_reg,
                                           alpha=args.strategy.alpha))
-    elif args.experiment.strategy == 'er':
-        strategy.mem_size = args.strategy.mem_size
-        strategy_plugins.append(OurReplayPlugin(batch_size=args.train.batch_size,
-                                                batch_size_mem=args.strategy.batch_size_mem, 
-                                                task_balanced_dataloader=True))
+
     elif args.experiment.strategy == 'rrr':
         strategy.plugins += [RRRPlugin(xai_loss=xai_loss,
                                         xai_optimizer=xai_optimizer,
@@ -185,9 +194,10 @@ def get_strategy(args, model, checkpoint_dir, device):
                                         num_experiences=args.experiment.n_tasks,
                                         batch_size=args.train.batch_size,
                                         batch_size_mem=args.strategy.batch_size_mem, 
-                                        task_balanced_dataloader=True)]
+                                        task_balanced_dataloader=True,
+                                        epr_selection=args.strategy.epr_selection)]
         
-    if args.experiment.benchmark == 'cifar100-split':
+    if args.experiment.benchmark == 'cifar100-split' or args.experiment.benchmark == 'tinyimagenet-split':
         scheduler = StepLR(optimizer, step_size=args.train.epochs//3, gamma=0.3)
         scheduler_plugin = LRSchedulerPlugin(scheduler, step_granularity="epoch", first_exp_only=False)
         strategy_plugins.append(scheduler_plugin)

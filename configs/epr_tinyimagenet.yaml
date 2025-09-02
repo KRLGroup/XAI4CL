@@ -1,29 +1,27 @@
 experiment:
-    benchmark: 'cifar100-split'
+    benchmark: 'tinyimagenet-split'
     n_tasks: 10
     model: 'resnet18'
     strategy: 'epr'
-    n_classes: 100
+    n_classes: 200
 
 train:
-    optimizer: 'sgd'
+    optimizer: 'adam'
     loss: 'cross_entropy'
-    lr: 0.01
-    momentum: 0.9
-    weight_decay: 0.01
+    lr: 0.001
 
-    batch_size: 32
-    epochs: 50
+    batch_size: 128
+    epochs: 100
 
 strategy:
     mem_size: 2000
     mem_adaptive_size: True
-    batch_size_mem: 32
-    patch_size: 28
+    batch_size_mem: 10
+    patch_size: 75
     stride: 1
     epr_selection: True
 
-run_id: 'epr_cifar100'
+run_id: 'epr_tinyimagenet'
 setup:
     checkpoint_dir: './checkpoints'
     checkpoint_every: 1 # Create a checkpoint every n epochs: -1 means you checkpoint just at the end of each task

@@ -1,14 +1,8 @@
 # XAI4CL
 
-*Under construction...*
+This repository re-implements existing XAI-guided continual learning methods, and allows testing them on different datasets and scenarios to provide ready-to-use baselines. It is still a work-in-progress, and we welcome contributions from the community to turn our initial efforts into a library.
 
-This is the official code repository of *XAI-Guided Continual Learning: Rationale, Methods, and Future Directions*. It re-implements existing XAI-guided continual learning methods, testing them on different datasets and scenarios to provide ready-to-use baselines.
-
-## XAI-Guided Continual Learning: Rationale, Methods, and Future Directions
-### Abstract
-Providing neural networks with the ability to learn new tasks sequentially represents one of the main challenges in artificial intelligence. Indeed, neural networks are prone to losing previously acquired knowledge upon learning new information, a phenomenon known as catastrophic forgetting. Continual learning proposes diverse solutions to mitigate this problem, but only a few leverage explainable artificial intelligence. This work justifies using explainability techniques in continual learning, emphasizing the need for greater transparency and trustworthiness in these systems and identifying a neuroscientific rationale in the similarities between the forgetting mechanisms in biological and artificial neural networks. Finally, we review existing research applying explainability methods to address catastrophic forgetting, organizing them into a comprehensive taxonomy and proposing potential avenues for future research on this topic.
-
-### XAI-guided Continual Learning
+## XAI-guided Continual Learning Approaches
 The following table summarizes existing XAI-guided continual learning approaches, providing useful references.
 | Name                                               | Abbreviation | Reference             | Venue                | Github                                                          |
 |----------------------------------------------------|--------------|-----------------------|----------------------|---------------------------------------------------------------------------------------|
@@ -25,7 +19,9 @@ The following table summarizes existing XAI-guided continual learning approaches
 | Saliency-Augmented Memory Completion               | SAMC         | [Bai, G. et al. (2023)](https://epubs.siam.org/doi/pdf/10.1137/1.9781611977653.ch28)          | SDM                  | [Link](https://github.com/BaiTheBest/SAMC)                                                    |
 | Concept Controller                                 | CC           | [Yang, S. et al. (2024)](https://openreview.net/forum?id=pGL4P2kg6V&noteId=vPp16Pn9BE)            | ICLR Reject          | -                                                                                     |
 
-## Environment set-up
+Up to now, our repository reimplements RRR and EPR.
+
+## Environment Set-up
 We provide a ready-to-use environment to perform experiments, following these steps:
 * Download and install docker following the steps at [this link](https://docs.docker.com/engine/install/).
 * Pull the PyTorch docker image optimized by NVIDIA
@@ -40,3 +36,28 @@ We provide a ready-to-use environment to perform experiments, following these st
   ```cd ..```
 * Run the docker container
   ```docker run --gpus all -it --rm -v XAI4CL:/workspace/ xai4cl:1.0```
+
+## XAI4CL Implementation
+XAI4CL is built on top of Avalanche, a modular and extensible PyTorch-based library tailored for CL, developed with a focus on reproducibility, scalability, and ease of experimentation. It is structured around five core modules: \textit{benchmarks}, \textit{training}, \textit{models}, \textit{evaluation}, and \textit{logging}, each supporting different stages of a CL pipeline.
+
+The \emph{benchmark} module facilitates the definition and manipulation of CL scenarios. It provides both standard and custom benchmarks by organizing data into streams and experiences, representing sequential learning tasks. This enables the flexible simulation of scenarios like TIL, CIL, and DIL learning.
+
+The \emph{training} module offers a suite of predefined strategies and supports the construction of hybrid approaches by combining multiple techniques. Central to this design is a plugin-based architecture, which allows researchers to inject additional behavior into training loops without modifying core strategy implementations. In this context, we integrate XAI-guided CL methods as \textit{strategy plugins} implementing attribution-based regularizers, replay buffers with saliency selection, or other explanation-driven components which can be used with the \textit{Naive} baseline (i.e., standard sequential training), in combination with other compatible strategies (e.g., EWC).
+
+The \emph{model} module introduces support for dynamic architectures, allowing the network structure to evolve over time, a key requirement in lifelong learning. Multi-head classifiers, progressive networks, and other adaptive architectures are readily supported.
+
+For performance tracking, the \emph{evaluation} module includes an extensive set of metrics, ranging from accuracy to memory usage, and supports both standalone and plugin-based usage. These metrics can be visualized or stored using the \emph{logging} module.
+
+Finally, Avalanche's design philosophy emphasizes composability. Strategies are built atop reusable templates, and the plugin interface allows XAI components to seamlessly interact with internal states of the learning process, such as modifying the loss function before each update or altering the data stream based on explanation scores. This flexibility has been key in enabling our unified implementation of XAI-guided CL methods within the \texttt{XAI4CL} repository.
+
+## Example Usage
+To run an experiment using one of our predifined configuration files, execute the following command from the _src_ folder:
+```python main.py --config ../configs/<config_name>.yaml```
+e.g.
+```python main.py --config ../configs/rrr_cifar10.yaml```
+This command will automatically run the chosen experiments using 3 different random seeds.
+
+By running experiments using our _main.py_ with predefined configuration files, the _MetricsCheckpoint_ plugin we implement in the _plugins_ folder is included, and therefore all metrics are automatically stored and plotted during training.
+
+## Tutorials
+We also provide a notebook in the _tutorials_ folder, in which we show step by step how to load a benchmarck, define a model, a base strategy, and add any of our plugins to test the desired CL strategy. For any information regarding benchmarks, models, and evaluation, please refer to Avalanche documentation.
