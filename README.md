@@ -40,21 +40,25 @@ We provide a ready-to-use environment to perform experiments, following these st
 ## XAI4CL Implementation
 XAI4CL is built on top of Avalanche, a modular and extensible PyTorch-based library tailored for CL, developed with a focus on reproducibility, scalability, and ease of experimentation. It is structured around five core modules: \textit{benchmarks}, \textit{training}, \textit{models}, \textit{evaluation}, and \textit{logging}, each supporting different stages of a CL pipeline.
 
-The \emph{benchmark} module facilitates the definition and manipulation of CL scenarios. It provides both standard and custom benchmarks by organizing data into streams and experiences, representing sequential learning tasks. This enables the flexible simulation of scenarios like TIL, CIL, and DIL learning.
+The _benchmark_ module facilitates the definition and manipulation of CL scenarios. It provides both standard and custom benchmarks by organizing data into streams and experiences, representing sequential learning tasks. This enables the flexible simulation of scenarios like TIL, CIL, and DIL learning.
 
-The \emph{training} module offers a suite of predefined strategies and supports the construction of hybrid approaches by combining multiple techniques. Central to this design is a plugin-based architecture, which allows researchers to inject additional behavior into training loops without modifying core strategy implementations. In this context, we integrate XAI-guided CL methods as \textit{strategy plugins} implementing attribution-based regularizers, replay buffers with saliency selection, or other explanation-driven components which can be used with the \textit{Naive} baseline (i.e., standard sequential training), in combination with other compatible strategies (e.g., EWC).
+The _training_ module offers a suite of predefined strategies and supports the construction of hybrid approaches by combining multiple techniques. Central to this design is a plugin-based architecture, which allows researchers to inject additional behavior into training loops without modifying core strategy implementations. In this context, we integrate XAI-guided CL methods as \textit{strategy plugins} implementing attribution-based regularizers, replay buffers with saliency selection, or other explanation-driven components which can be used with the \textit{Naive} baseline (i.e., standard sequential training), in combination with other compatible strategies (e.g., EWC).
 
-The \emph{model} module introduces support for dynamic architectures, allowing the network structure to evolve over time, a key requirement in lifelong learning. Multi-head classifiers, progressive networks, and other adaptive architectures are readily supported.
+The _model_ module introduces support for dynamic architectures, allowing the network structure to evolve over time, a key requirement in lifelong learning. Multi-head classifiers, progressive networks, and other adaptive architectures are readily supported.
 
-For performance tracking, the \emph{evaluation} module includes an extensive set of metrics, ranging from accuracy to memory usage, and supports both standalone and plugin-based usage. These metrics can be visualized or stored using the \emph{logging} module.
+For performance tracking, the _evaluation_ module includes an extensive set of metrics, ranging from accuracy to memory usage, and supports both standalone and plugin-based usage. These metrics can be visualized or stored using the _logging_ module.
 
 Finally, Avalanche's design philosophy emphasizes composability. Strategies are built atop reusable templates, and the plugin interface allows XAI components to seamlessly interact with internal states of the learning process, such as modifying the loss function before each update or altering the data stream based on explanation scores. This flexibility has been key in enabling our unified implementation of XAI-guided CL methods within the \texttt{XAI4CL} repository.
 
 ## Example Usage
 To run an experiment using one of our predifined configuration files, execute the following command from the _src_ folder:
+
 ```python main.py --config ../configs/<config_name>.yaml```
+
 e.g.
+
 ```python main.py --config ../configs/rrr_cifar10.yaml```
+
 This command will automatically run the chosen experiments using 3 different random seeds.
 
 By running experiments using our _main.py_ with predefined configuration files, the _MetricsCheckpoint_ plugin we implement in the _plugins_ folder is included, and therefore all metrics are automatically stored and plotted during training.
