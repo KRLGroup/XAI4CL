@@ -1,4 +1,4 @@
-# XAI4CL
+![alt text](https://github.com/KRLGroup/XAI4CL/blob/main/logo.jpg)
 
 This repository re-implements existing XAI-guided continual learning methods, and allows testing them on different datasets and scenarios to provide ready-to-use baselines. It is still a work-in-progress, and we welcome contributions from the community to turn our initial efforts into a library.
 
@@ -65,3 +65,22 @@ By running experiments using our _main.py_ with predefined configuration files, 
 
 ## Tutorials
 We also provide a notebook in the _tutorials_ folder, in which we show step by step how to load a benchmarck, define a model, a base strategy, and add any of our plugins to test the desired CL strategy. For any information regarding benchmarks, models, and evaluation, please refer to Avalanche documentation.
+
+## Citation
+If you use this code, please cite:
+```
+@article{https://doi.org/10.1002/widm.70046,
+  author = {Proietti, Michela and Ragno, Alessio and Capobianco, Roberto},
+  title = {XAI-Guided Continual Learning: Rationale, Methods, and Future Directions},
+  journal = {WIREs Data Mining and Knowledge Discovery},
+  volume = {15},
+  number = {4},
+  pages = {e70046},
+  keywords = {continual learning, explainable artificial intelligence, explanation guided learning},
+  doi = {https://doi.org/10.1002/widm.70046},
+  url = {https://wires.onlinelibrary.wiley.com/doi/abs/10.1002/widm.70046},
+  eprint = {https://wires.onlinelibrary.wiley.com/doi/pdf/10.1002/widm.70046},
+  note = {e70046 DMKD-00697.R2},
+  year = {2025}
+}
+```
